@@ -1,6 +1,6 @@
 package utils;
 
-import model.Todo;
+import main.java.com.todo.model.Todo;
 import java.util.List;
 
 public class HtmlHelper
