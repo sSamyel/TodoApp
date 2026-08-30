@@ -1,11 +1,14 @@
 package com.todo.storage;
 
 import com.todo.model.Todo;
+import org.springframework.stereotype.Component;
+
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Component
 public class TodoStorage {
     private static final String STORAGE_FILE = "todos.txt";
     private Map<Integer, Todo> todos = new HashMap<>();
