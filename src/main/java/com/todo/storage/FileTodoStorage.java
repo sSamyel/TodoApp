@@ -7,9 +7,8 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component  // ← теперь это не сам интерфейс, а его реализация
+@Component
 public class FileTodoStorage implements TodoStorage {
-
     private static final String STORAGE_FILE = "todos.txt";
     private Map<Integer, Todo> todos = new HashMap<>();
     private int nextId = 1;

@@ -1,7 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -125,68 +123,52 @@
             color: #999;
             padding: 40px 0;
         }
-        .badge {
-            background: #667eea;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>
-            📋 Мои задачи
-            <span style="font-size: 14px; color: #999;">
-                Всего: ${totalCount}
+<div class="container">
+    <h1>
+        📋 Мои задачи
+        <span style="font-size: 14px; color: #999;">
+                Всего: <span th:text="${totalCount}">0</span>
             </span>
-        </h1>
+    </h1>
 
-        <form action="${pageContext.request.contextPath}/todos/add" method="POST" class="add-form">
-            <input type="text" name="title" placeholder="Название задачи" required>
-            <input type="text" name="description" placeholder="Описание (необязательно)">
-            <button type="submit">+ Добавить</button>
-        </form>
+    <form action="/todos/add" method="POST" class="add-form">
+        <input type="text" name="title" placeholder="Название задачи" required>
+        <input type="text" name="description" placeholder="Описание (необязательно)">
+        <button type="submit">+ Добавить</button>
+    </form>
 
-        <div class="filters">
-            <a href="${pageContext.request.contextPath}/todos" class="${filter == 'all' ? 'active' : ''}">Все</a>
-            <a href="${pageContext.request.contextPath}/todos?filter=active" class="${filter == 'active' ? 'active' : ''}">Активные</a>
-            <a href="${pageContext.request.contextPath}/todos?filter=completed" class="${filter == 'completed' ? 'active' : ''}">Выполненные</a>
-        </div>
+    <div class="filters">
+        <a href="/todos" th:classappend="${filter == 'all' ? 'active' : ''}">Все</a>
+        <a href="/todos?filter=active" th:classappend="${filter == 'active' ? 'active' : ''}">Активные</a>
+        <a href="/todos?filter=completed" th:classappend="${filter == 'completed' ? 'active' : ''}">Выполненные</a>
+    </div>
 
-        <div class="todo-list">
-            <c:choose>
-                <c:when test="${empty todos}">
-                    <div class="empty">🎉 Пока нет задач. Добавьте первую!</div>
-                </c:when>
-                <c:otherwise>
-                    <c:forEach var="todo" items="${todos}">
-                        <div class="todo-item ${todo.completed ? 'completed' : ''}">
-                            <div class="todo-title">
-                                ${todo.title}
-                                <div style="font-size:12px;color:#999;">${todo.description}</div>
-                            </div>
-                            <div class="todo-date">
-                                ${todo.formattedCreatedAt}
-                            </div>
-                            <div class="todo-actions">
-                                <form action="${pageContext.request.contextPath}/todos/toggle" method="POST" style="display:inline;">
-                                    <input type="hidden" name="id" value="${todo.id}">
-                                    <button type="submit" class="btn-toggle ${todo.completed ? 'undo' : ''}">
-                                        ${todo.completed ? '↩ Вернуть' : '✅ Выполнено'}
-                                    </button>
-                                </form>
-                                <form action="${pageContext.request.contextPath}/todos/delete" method="POST" style="display:inline;">
-                                    <input type="hidden" name="id" value="${todo.id}">
-                                    <button type="submit" class="btn-delete" onclick="return confirm('Удалить задачу?')">🗑</button>
-                                </form>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </c:otherwise>
-            </c:choose>
+    <div class="todo-list">
+        <div th:if="${todos.isEmpty()}" class="empty">🎉 Пока нет задач. Добавьте первую!</div>
+        <div th:each="todo : ${todos}" class="todo-item" th:classappend="${todo.completed ? 'completed' : ''}">
+            <div class="todo-title">
+                <span th:text="${todo.title}">Название</span>
+                <div style="font-size:12px;color:#999;" th:text="${todo.description}">Описание</div>
+            </div>
+            <div class="todo-date" th:text="${todo.formattedCreatedAt}">Дата</div>
+            <div class="todo-actions">
+                <form action="/todos/toggle" method="POST" style="display:inline;">
+                    <input type="hidden" name="id" th:value="${todo.id}">
+                    <button type="submit" class="btn-toggle" th:classappend="${todo.completed ? 'undo' : ''}">
+                        <span th:if="${todo.completed}">↩ Вернуть</span>
+                        <span th:unless="${todo.completed}">✅ Выполнено</span>
+                    </button>
+                </form>
+                <form action="/todos/delete" method="POST" style="display:inline;">
+                    <input type="hidden" name="id" th:value="${todo.id}">
+                    <button type="submit" class="btn-delete" onclick="return confirm('Удалить задачу?')">🗑</button>
+                </form>
+            </div>
         </div>
     </div>
+</div>
 </body>
 </html>

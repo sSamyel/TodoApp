@@ -1,7 +1,6 @@
 package com.todo.controller;
 
 import com.todo.model.Todo;
-import com.todo.storage.FileTodoStorage;
 import com.todo.storage.TodoStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,7 +35,7 @@ public class TodoController {
         model.addAttribute("filter", filter);
         model.addAttribute("totalCount", todos.size());
 
-        return "todo-list";
+        return "todo-list";  // → templates/todo-list.html (Thymeleaf)
     }
 
     @PostMapping("/add")
@@ -60,6 +59,12 @@ public class TodoController {
     @PostMapping("/delete")
     public String deleteTodo(@RequestParam("id") int id) {
         storage.delete(id);
+        return "redirect:/todos";
+    }
+
+    // Редирект с корня
+    @GetMapping("/")
+    public String redirectToTodos() {
         return "redirect:/todos";
     }
 }
