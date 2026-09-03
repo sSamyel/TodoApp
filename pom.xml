@@ -13,8 +13,8 @@
     </parent>
 
     <groupId>com.todo</groupId>
-    <artifactId>todo-app-springboot</artifactId>
-    <version>4.0.0</version>
+    <artifactId>todo-backend</artifactId>
+    <version>5.0.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -24,16 +24,10 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Web (включает Tomcat, Spring MVC и всё остальное) -->
+        <!-- Spring Boot Web (включает Tomcat, REST, Jackson) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- Thymeleaf (замена JSP) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
         <!-- Для удобства разработки (горячая перезагрузка) -->
