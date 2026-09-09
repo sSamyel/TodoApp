@@ -1,8 +1,14 @@
 package com.todo.controller;
 
 import com.todo.model.Todo;
-import com.todo.storage.TodoStorage;
+import com.todo.model.User;
+import com.todo.service.TodoService;
+import com.todo.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,40 +18,50 @@ import java.util.List;
 public class TodoRestController {
 
     @Autowired
-    private TodoStorage storage;
+    private TodoService todoService;
 
-    // GET /api/todos — список всех задач
+    @Autowired
+    private UserService userService;
+
+    private User getCurrentUser() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userService.findByUsername(userDetails.getUsername());
+    }
+
     @GetMapping
     public List<Todo> getAllTodos() {
-        return storage.findAll();
+        User currentUser = getCurrentUser();
+        return todoService.findAllByUser(currentUser);
     }
 
-    // GET /api/todos?filter=active
     @GetMapping(params = "filter")
     public List<Todo> getFilteredTodos(@RequestParam String filter) {
+        User currentUser = getCurrentUser();
         if ("active".equals(filter)) {
-            return storage.findByStatus(false);
+            return todoService.findByUserAndCompleted(currentUser, false);
         } else if ("completed".equals(filter)) {
-            return storage.findByStatus(true);
+            return todoService.findByUserAndCompleted(currentUser, true);
         }
-        return storage.findAll();
+        return todoService.findAllByUser(currentUser);
     }
 
-    // POST /api/todos — создать задачу
     @PostMapping
-    public Todo createTodo(@RequestBody Todo todo) {
-        return storage.create(todo.getTitle(), todo.getDescription());
+    @ResponseStatus(HttpStatus.CREATED)
+    public Todo createTodo(@Valid @RequestBody Todo todo) {
+        User currentUser = getCurrentUser();
+        return todoService.create(todo, currentUser);
     }
 
-    // PUT /api/todos/{id}/toggle — переключить статус
     @PutMapping("/{id}/toggle")
-    public Todo toggleTodo(@PathVariable int id) {
-        return storage.toggleComplete(id);
+    public Todo toggleTodo(@PathVariable Long id) {
+        User currentUser = getCurrentUser();
+        return todoService.toggleComplete(id, currentUser);
     }
 
-    // DELETE /api/todos/{id} — удалить задачу
     @DeleteMapping("/{id}")
-    public void deleteTodo(@PathVariable int id) {
-        storage.delete(id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTodo(@PathVariable Long id) {
+        User currentUser = getCurrentUser();
+        todoService.delete(id, currentUser);
     }
 }

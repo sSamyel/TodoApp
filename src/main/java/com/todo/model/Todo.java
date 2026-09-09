@@ -1,46 +1,42 @@
 package com.todo.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.io.Serializable;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
-public class Todo implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private static int nextId = 1;
+@Entity
+@Table(name = "todos")
+public class Todo {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String title;
     private String description;
     private boolean completed;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Todo() {}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    public Todo(String title, String description) {
-        this.id = nextId++;
-        this.title = title;
-        this.description = description;
-        this.completed = false;
+    public Todo() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.completed = false;
     }
 
-    public Todo(int id, String title, String description,
-                boolean completed, String createdAt, String updatedAt) {
-        this.id = id;
+    public Todo(String title, String description, User user) {
+        this();
         this.title = title;
         this.description = description;
-        this.completed = completed;
-        this.createdAt = LocalDateTime.parse(createdAt);
-        this.updatedAt = LocalDateTime.parse(updatedAt);
-        if (id >= nextId) nextId = id + 1;
+        this.user = user;
     }
 
-    // Геттеры и сеттеры
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -60,15 +56,6 @@ public class Todo implements Serializable {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
-    // JSON не нуждается в этом методе
-    @JsonIgnore
-    public String getFormattedCreatedAt() {
-        return createdAt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%d|%s|%s|%b|%s|%s",
-                id, title, description, completed, createdAt, updatedAt);
-    }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }

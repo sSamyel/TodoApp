@@ -3,14 +3,11 @@ function TodoList({ todos, onToggle, onDelete }) {
         return <div className="empty">🎉 Пока нет задач. Добавьте первую!</div>;
     }
 
-    // Функция для правильного форматирования даты
     const formatDate = (dateValue) => {
         if (!dateValue) return 'Неизвестно';
 
-        // Если дата пришла в виде массива [год, месяц, день, час, минута, секунда]
         if (Array.isArray(dateValue)) {
             const [year, month, day, hour, minute] = dateValue;
-            // month в массиве начинается с 1, а в JS Date с 0, поэтому вычитаем 1
             const date = new Date(year, month - 1, day, hour || 0, minute || 0);
             return date.toLocaleDateString('ru-RU', {
                 day: '2-digit',
@@ -21,7 +18,6 @@ function TodoList({ todos, onToggle, onDelete }) {
             });
         }
 
-        // Если дата пришла в виде строки
         if (typeof dateValue === 'string') {
             const date = new Date(dateValue);
             if (!isNaN(date.getTime())) {
